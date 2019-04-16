@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <title>Home Assistant</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="//cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.5/all/gauge.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Tableau de bord</h2>
+  <ul id="navtab" class="nav nav-tabs"></ul>
+  <div id="contenttab" class="tab-content"></div>
+</div>
+  <script>
+  /*
+    var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    // XHR for Chrome/Firefox/Opera/Safari.
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    // XDomainRequest for IE.
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    // CORS not supported.
+    xhr = null;
+  }
+  return xhr;
+  */
+  
+	function createXhrObject()
+	{
+	
+		var xhr = new XMLHttpRequest();
+		if (window.XMLHttpRequest)
+		{
+			return xhr;
+		}
+		else if (typeof XDomainRequest != "undefined") 
+		{
+			return new XDomainRequest();
+		} 
+		else 
+		{
+			window.alert("Votre navigateur ne prend pas en charge l'objet XMLHTTPRequest.");
+			return null; // non supporté
+		}
+	}
+	
+	xmlhttp = createXhrObject();
+	xmlhttp.onreadystatechange = function() 
+	{
+		
+		if (this.readyState == 4 && this.status == 200) 
+		{
+			xmlDoc = xmlhttp.responseXML;
+ 	        console.log(xmlDoc);
+			var x = xmlDoc.getElementsByTagName("Waspmotes");
+			var nav = "";
+			var content = "";
+			var flag = true;
+			for (i = 0; i < x[0].childNodes.length; i++) 
+			{
+				if (x[0].childNodes[i].nodeType == 1) 
+				{
+					
+					var name = x[0].childNodes[i].nodeName;
+					if (flag == true) 
+					{
+
+					  nav = '<li class="active"><a data-toggle="tab" href="#' + name + '">' + name +'</a></li>';
+					  content = '<div id="' + name + '" class="tab-pane fade in active"></div>';
+					  flag = false;
+					} 
+					else 
+					{
+					  nav += '<li><a data-toggle="tab" href="#' + name + '">' + name + '</a></li>';
+					  content += '<div id="' + name + '" class="tab-pane fade"></div>';
+					}
+				}
+			}
+			
+			document.getElementById("contenttab").innerHTML = content;
+			document.getElementById("navtab").innerHTML = nav;
+				
+			for (i = 0; i < x[0].childNodes.length; i++) 
+			{
+				
+				if (x[0].childNodes[i].nodeType == 1) 
+				{
+					var name = x[0].childNodes[i].nodeName;
+					a = x[0].getElementsByTagName(name);
+					
+					txt = "<br>";
+					<!-- txt+="<table style='width:100%'><tr>"; -->
+					<!-- for (j = 0; j < a[0].childNodes.length; j++)  -->
+					<!-- { -->
+						<!-- if (a[0].childNodes[j].nodeType == 1)  -->
+						<!-- { -->
+							<!-- name_noeud1=a[0].childNodes[j].nodeName; -->
+							<!-- //alert(name_noeud1); -->
+							<!-- txt+="<td>"+name_noeud1+"</td>";  -->
+						
+						<!-- } -->
+					<!-- } -->
+					
+					<!-- txt+="</tr></table><br>"; -->
+					//txt+="<table style='width:100%'><tr>";
+					
+					for (j = 0; j < a[0].childNodes.length; j++) 
+					{
+						if (a[0].childNodes[j].nodeType == 1) 
+						{
+							name_noeud1=a[0].childNodes[j].nodeName;
+							//alert(name_noeud1);
+							txt+=name_noeud1+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; 
+						
+						}
+					}
+					txt+="<br>";
+					for (j = 0; j < a[0].childNodes.length; j++) 
+					{
+						if (a[0].childNodes[j].nodeType == 1) 
+						{
+							name_noeud=a[0].childNodes[j].nodeName;
+							//alert(name_noeud);
+							if(name_noeud=="Temperature")
+							{
+							//txt+="<canvas data-type='linear-gauge' data-color-numbers='red' data-width='100' data-height='300' data-value='"+a[0].childNodes[j].childNodes[0].data+"'></canvas></td>";
+								txt+="<canvas style='float:left;' data-type='linear-gauge' data-color-numbers='red' data-width='100' data-height='300' data-value='"+a[0].childNodes[j].childNodes[0].data+"'></canvas>";
+								txt+="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+							}	
+							else 
+							{
+								txt+="<canvas style='float:left;' data-type='radial-gauge'  data-major-ticks='0,50,100,150,200,250' data-width='200' data-height='200' data-value='"+a[0].childNodes[j].childNodes[0].data+"'></canvas>";
+							}
+							txt+="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+							
+						}
+					}
+					var tag = x[0].childNodes[i].nodeName;
+					document.getElementById(tag).innerHTML = txt;
+					
+				}
+			}
+		}
+	}
+	if ("withCredentials" in xmlhttp) {
+		xmlhttp.open("GET","gateway.xml",true);
+	} else {
+		xmlhttp.open("GET","gateway.xml");
+	}
+	xmlhttp.setRequestHeader(
+    'X-Custom-Header', 'value');
+	xmlhttp.send();
+	setTimeout("location.reload(true);",4500);
+  </script>
+
+</body>
+</html>
